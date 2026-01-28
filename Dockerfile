@@ -31,12 +31,14 @@ WORKDIR /app
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 
+RUN mkdir -p /config
+
 ENV PORT=8080 \
     OUTPUT_PATH=/data/timetree.ics \
     CRON_SCHEDULE="*/30 * * * *" \
     NODE_ENV=production
 
-VOLUME ["/data"]
+VOLUME ["/data", "/config"]
 EXPOSE 8080
 
 CMD ["node", "dist/index.js"]
