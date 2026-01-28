@@ -14,3 +14,9 @@ yarn-error.log*
 
 # OS / editor
 .DS_Store
+
+
+# Production directory's
+
+data
+config/production.yaml
