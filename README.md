@@ -65,6 +65,10 @@ Place the file in the mounted `/config` volume (or point `TIMETREE_CONFIG` elsew
 
 Security note: ICS files are otherwise public. Options: deterministic names (easy to share), custom/ random `{token}` for obscurity, or per-file Basic Auth. For stronger guarantees, front the service with a reverse proxy that enforces auth or IP allowlisting. The `/health` endpoint only returns minimal status (no paths or tokens); detailed info is logged server-side with tokens masked.
 
+## Credits & license
+- Built on top of the Python [`timetree-exporter`](https://github.com/eoleedi/TimeTree-Exporter) (MIT).
+- This project is MIT licensed (see `LICENSE`).
+
 ## How it works
 - `src/index.ts` (compiled to `dist/index.js`) runs an initial export, serves `/data` via Express, and schedules subsequent exports with `node-cron`.
 - The actual export is performed by the Python `timetree-exporter` CLI invoked from Node.
