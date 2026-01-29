@@ -1,7 +1,8 @@
 import { existsSync, readFileSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { parse as parseYaml } from 'yaml';
-import { ensureDir, randomToken, slugify } from './utils';
+import { ensureDir, slugify } from './utils';
 import { BasicAuth, ExportJob } from './types';
 import { logger } from './logger';
 
@@ -19,6 +20,20 @@ function parseBasicAuth(entry: any): BasicAuth | undefined {
 
 function buildJobsFromConfig(entries: any[], outputBase: string): ExportJob[] {
   const jobs: ExportJob[] = [];
+  const tokenSeed = process.env.TOKEN_SEED ?? '';
+
+  const makeStableToken = (email: string, calendar?: string) => {
+    const hash = createHash('sha1')
+      .update(email)
+      .update('|')
+      .update(calendar ?? 'default')
+      .update('|')
+      .update(tokenSeed)
+      .digest('hex');
+    // Base36-ish: take hex and convert to big int then to base36, or simpler: slice hex
+    const base = BigInt('0x' + hash).toString(36).toUpperCase();
+    return base.slice(0, 10);
+  };
 
   for (const [index, entry] of entries.entries()) {
     const email = entry?.email as string | undefined;
@@ -34,7 +49,7 @@ function buildJobsFromConfig(entries: any[], outputBase: string): ExportJob[] {
       entry?.randomToken === true ||
       entry?.random_token === true ||
       entry?.token === true ||
-      (!outputTemplate && fixedToken === undefined); // default for YAML
+      (!outputTemplate && fixedToken === undefined); // default for YAML (now stable)
     const skipToken =
       entry?.randomToken === false || entry?.random_token === false || entry?.token === false;
     const auth = parseBasicAuth(entry);
@@ -45,7 +60,7 @@ function buildJobsFromConfig(entries: any[], outputBase: string): ExportJob[] {
 
     const codes = Array.isArray(calendarCodes) ? calendarCodes : [calendarCodes];
     for (const code of codes) {
-      const token = fixedToken ?? (addToken && !skipToken ? randomToken(10) : undefined);
+      const token = fixedToken ?? (addToken && !skipToken ? makeStableToken(email, code) : undefined);
 
       const replacements = {
         email: slugify(email),
@@ -63,7 +78,7 @@ function buildJobsFromConfig(entries: any[], outputBase: string): ExportJob[] {
         typeof outputTemplate === 'string'
           ? applyTemplate(outputTemplate)
           : addToken && !skipToken
-            ? path.join(outputBase, `${token ?? randomToken(10)}.ics`)
+            ? path.join(outputBase, `${token ?? makeStableToken(email, code)}.ics`)
             : path.join(
                 outputBase,
                 `${slugify(email)}-${code ? slugify(code) : 'default'}.ics`

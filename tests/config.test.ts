@@ -33,8 +33,11 @@ exports:
       process.env.TIMETREE_CONFIG = cfgPath;
       process.env.OUTPUT_BASE = dir;
       const { jobs } = loadJobs();
-      expect(jobs[0].token).toBeDefined();
-      expect(path.basename(jobs[0].outputPath)).toContain(jobs[0].token as string);
+      const token = jobs[0].token;
+      expect(token).toBeDefined();
+      expect(token).toMatch(/^[A-Z0-9]{6,10}$/);
+      const { jobs: jobs2 } = loadJobs();
+      expect(jobs2[0].token).toBe(token); // stable across runs
     });
   });
 
