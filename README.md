@@ -20,8 +20,11 @@ docker run -d --name timetree-live-ics \
 # Health JSON:  http://localhost:8080/health
 ```
 
+### Local dev with `.env`
+Copy `.env.example` to `.env`, adjust values, and run `npm run dev` or `npm start` (after `npm run build`). By default the app will look for `config.yaml` in the project root; override with `TIMETREE_CONFIG`.
+
 ## Multiple calendars via YAML
-Instead of environment variables you can point the container to a YAML config. Default path is `/config/config.yaml` (override with `TIMETREE_CONFIG`). Example:
+Instead of environment variables you can point the container to a YAML config. Default path is `/config/config.yaml` in the container; when developing locally we default to `./config.yaml` if it exists (override in both cases with `TIMETREE_CONFIG`). Example:
 
 ```yaml
 exports:

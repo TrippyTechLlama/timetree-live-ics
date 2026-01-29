@@ -128,7 +128,10 @@ function resolveOutputBase(): string {
 export function loadJobs(): { jobs: ExportJob[]; configPath?: string } {
   const OUTPUT_BASE = resolveOutputBase();
   const DEFAULT_OUTPUT_PATH = process.env.OUTPUT_PATH ?? path.join(OUTPUT_BASE, 'timetree.ics');
-  const DEFAULT_CONFIG_PATH = '/config/config.yaml';
+  const LOCAL_CONFIG_CANDIDATE = path.resolve(process.cwd(), 'config.yaml');
+  const DEFAULT_CONFIG_PATH = existsSync(LOCAL_CONFIG_CANDIDATE)
+    ? LOCAL_CONFIG_CANDIDATE
+    : '/config/config.yaml';
   const envConfigPath = process.env.TIMETREE_CONFIG;
   const CONFIG_PATH = envConfigPath ?? DEFAULT_CONFIG_PATH;
   const CONFIG_REQUESTED = envConfigPath !== undefined;
