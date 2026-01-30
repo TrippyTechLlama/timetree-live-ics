@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.5](https://github.com/mr-onadasky/timetree-live-ics/compare/v0.4.4...v0.4.5) (2026-01-30)
+
+
+### Bug Fixes
+
+* another attempt to fix image versioning ([3e24f90](https://github.com/mr-onadasky/timetree-live-ics/commit/3e24f90da3066544e65e7118f13080e5c0c02ec2))
+
 ## [0.4.4](https://github.com/mr-onadasky/timetree-live-ics/compare/v0.4.3...v0.4.4) (2026-01-30)
 
 
