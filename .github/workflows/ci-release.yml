@@ -3,7 +3,7 @@ name: CI & Publish
 on:
     push:
         branches: [main]
-        tags: ["v*"]
+        tags: ["v*", "timetree-live-ics-v*"]
     pull_request:
         branches: [main]
 
@@ -47,6 +47,8 @@ jobs:
                   tags: |
                       type=ref,event=branch,branch=main
                       type=ref,event=tag
+                      type=semver,pattern={{version}}
+                      type=semver,pattern=v{{version}}
                       type=sha
                       type=raw,value=latest,enable={{is_default_branch}}
             - name: Set build metadata
@@ -100,6 +102,8 @@ jobs:
                   tags: |
                       type=ref,event=branch,branch=main
                       type=ref,event=tag
+                      type=semver,pattern={{version}}
+                      type=semver,pattern=v{{version}}
                       type=sha
                       type=raw,value=latest,enable={{is_default_branch}}
             - name: Set build metadata
