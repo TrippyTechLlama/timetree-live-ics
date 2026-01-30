@@ -42,6 +42,14 @@ jobs:
             - name: Set build metadata
               run: |
                   echo "BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
+            - name: Compute app version
+              id: app_version
+              run: |
+                  if [ -n "${{ steps.meta.outputs.version }}" ]; then
+                    echo "APP_VERSION=${{ steps.meta.outputs.version }}" >> $GITHUB_ENV
+                  else
+                    echo "APP_VERSION=$(python - <<'PY'\nimport json\nprint(json.load(open('package.json'))['version'])\nPY)" >> $GITHUB_ENV
+                  fi
 
             - name: Docker meta
               id: meta
@@ -73,7 +81,7 @@ jobs:
                   tags: ${{ steps.meta.outputs.tags }}
                   labels: ${{ steps.meta.outputs.labels }}
                   build-args: |
-                      APP_VERSION=${{ steps.meta.outputs.version }}
+                      APP_VERSION=${{ env.APP_VERSION }}
                       GIT_SHA=${{ github.sha }}
                       BUILD_TIME=${{ env.BUILD_TIME }}
                   cache-from: type=gha
@@ -91,6 +99,14 @@ jobs:
             - name: Set build metadata
               run: |
                   echo "BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
+            - name: Compute app version
+              id: app_version
+              run: |
+                  if [ -n "${{ steps.meta.outputs.version }}" ]; then
+                    echo "APP_VERSION=${{ steps.meta.outputs.version }}" >> $GITHUB_ENV
+                  else
+                    echo "APP_VERSION=$(python - <<'PY'\nimport json\nprint(json.load(open('package.json'))['version'])\nPY)" >> $GITHUB_ENV
+                  fi
 
             - name: Docker meta
               id: meta
@@ -121,7 +137,7 @@ jobs:
                   tags: ${{ steps.meta.outputs.tags }}
                   labels: ${{ steps.meta.outputs.labels }}
                   build-args: |
-                      APP_VERSION=${{ steps.meta.outputs.version }}
+                      APP_VERSION=${{ env.APP_VERSION }}
                       GIT_SHA=${{ github.sha }}
                       BUILD_TIME=${{ env.BUILD_TIME }}
                   cache-from: type=gha
