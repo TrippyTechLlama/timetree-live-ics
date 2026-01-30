@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { maskIfTokenForTest } from '../src/lib/health';
+import { buildInfo } from '../src/lib/version';
 
 describe('health masking', () => {
   it('masks tokenized output paths', () => {
@@ -15,5 +16,10 @@ describe('health masking', () => {
       outputPath: '/data/public.ics',
     });
     expect(masked).toBe('/data/public.ics');
+  });
+
+  it('exposes version in build info', () => {
+    expect(buildInfo.version).toBeDefined();
+    expect(buildInfo.version).toBeTypeOf('string');
   });
 });

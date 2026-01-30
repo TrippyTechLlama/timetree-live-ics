@@ -3,6 +3,7 @@
 Containerized TimeTree → ICS sync with a live URL. Now implemented in TypeScript (Node) with an internal cron and static server. It still uses the upstream [`timetree-exporter`](https://github.com/eoleedi/TimeTree-Exporter) Python CLI under the hood.
 
 [![CI & Publish](https://github.com/TrippyTechLlama/timetree-live-ics/actions/workflows/ci-release.yml/badge.svg)](https://github.com/TrippyTechLlama/timetree-live-ics/actions/workflows/ci-release.yml)
+[![Release Please](https://github.com/TrippyTechLlama/timetree-live-ics/actions/workflows/release-please.yml/badge.svg)](https://github.com/TrippyTechLlama/timetree-live-ics/actions/workflows/release-please.yml)
 
 ## Quick start
 
@@ -18,6 +19,7 @@ docker run -d --name timetree-live-ics \
 
 # Live ICS URL: http://localhost:8080/timetree.ics
 # Health JSON:  http://localhost:8080/health
+# Version JSON: http://localhost:8080/version
 ```
 
 ### Local dev with `.env`
@@ -65,6 +67,9 @@ Place the file in the mounted `/config` volume (or point `TIMETREE_CONFIG` elsew
 - `OUTPUT_PATH` *(default `/data/timetree.ics`)* – Location of the exported ICS in the container (used only when `TIMETREE_CONFIG` is not set).
 - `PORT` *(default `8080`)* – HTTP port to serve `/data`.
 - `TIMETREE_CONFIG` *(optional)* – Path to a YAML config that defines multiple exports (see above). Overrides individual env vars. Defaults to `/config/config.yaml` if present.
+- `APP_VERSION` *(optional)* – Override the reported version (otherwise uses `package.json`).
+- `GIT_SHA` / `GITHUB_SHA` / `COMMIT_SHA` *(optional)* – Attach commit hash to `/version`.
+- `BUILD_TIME` *(optional)* – Attach build timestamp to `/version`.
 - `randomToken` / `token` *(YAML per-entry)* – Set `randomToken: true` (default when `output` missing) to generate a short base36 token for filenames, or provide a fixed `token` string yourself.
 - `auth` *(YAML per-entry)* – `{ type: basic, username, password }` to protect the ICS file with HTTP Basic Auth.
 - `STARTUP_DELAY` *(default `0s`)* – Delay the first export after process start. Accepts `Xs`, `Xm`, or `Xh` (e.g., `30s`, `2m`, `1h`).
@@ -75,6 +80,11 @@ Security note: ICS files are otherwise public. Options: deterministic names (eas
 ## Credits & license
 - Built on top of the Python [`timetree-exporter`](https://github.com/eoleedi/TimeTree-Exporter) (MIT).
 - This project is MIT licensed (see `LICENSE`).
+
+## Releases & versioning
+- Conventional Commits drive automated releases via Release Please (see `.github/workflows/release-please.yml`).
+- While `<1.0`, breaking changes bump the **minor** version (configured with `bump-minor-pre-major: true`); features also bump minor; fixes bump patch.
+- Tags and changelog/`package.json` are generated in the release PR; merge it to cut the release and publish tags/images.
 
 ## How it works
 - `src/index.ts` (compiled to `dist/index.js`) runs an initial export, serves `/data` via Express, and schedules subsequent exports with `node-cron`.

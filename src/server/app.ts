@@ -4,6 +4,7 @@ import { Buffer } from 'node:buffer';
 import { ExportJob, HealthPayload, RunState } from '../lib/types';
 import { maskIfToken } from '../lib/health';
 import { logger } from '../lib/logger';
+import { buildInfo } from '../lib/version';
 
 export function buildApp(
   jobs: ExportJob[],
@@ -51,6 +52,7 @@ export function buildApp(
       lastError: state.lastError ?? null,
       running: state.running,
       schedule: cronSchedule,
+      version: buildInfo.version,
     };
 
     // Log detailed info (masked tokens) without returning it
@@ -70,6 +72,10 @@ export function buildApp(
     logger.debug({ details }, 'Health detail');
 
     res.json(payload);
+  });
+
+  app.get('/version', (_req, res) => {
+    res.json(buildInfo);
   });
 
   // Logging

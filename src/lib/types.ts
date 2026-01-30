@@ -29,6 +29,12 @@ export type RunState = {
   jobs: Record<string, JobState>;
 };
 
+export type BuildInfo = {
+  version: string;
+  commit?: string;
+  buildTime?: string;
+};
+
 export type HealthPayload = {
   status: 'ok' | 'degraded';
   lastRun: string | null;
@@ -36,5 +42,6 @@ export type HealthPayload = {
   lastError: string | null;
   running: boolean;
   schedule: string;
+  version: string;
   // Sensitive details are logged, not returned.
 };

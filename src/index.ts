@@ -9,6 +9,7 @@ import { RunState } from './lib/types';
 import { runExport } from './lib/exporter';
 import { buildApp } from './server/app';
 import { logger } from './lib/logger';
+import { buildInfo } from './lib/version';
 
 const CRON_SCHEDULE = process.env.CRON_SCHEDULE ?? '*/30 * * * *';
 const STARTUP_DELAY_SECONDS = parseDurationSeconds(process.env.STARTUP_DELAY ?? '0s');
@@ -49,6 +50,12 @@ const state: RunState = { running: false, jobs: {} };
 for (const job of jobs) {
   state.jobs[job.id] = { running: false };
 }
+
+logger.info(
+  `Version ${buildInfo.version}${buildInfo.commit ? ` (${buildInfo.commit})` : ''}${
+    buildInfo.buildTime ? ` built ${buildInfo.buildTime}` : ''
+  }`
+);
 
 // Kick off first export (optionally delayed)
 if (STARTUP_DELAY_SECONDS > 0) {

@@ -91,6 +91,29 @@ describe('server endpoints', () => {
     expect(body).not.toHaveProperty('outputs');
     expect(body).not.toHaveProperty('jobs');
     expect(body).not.toHaveProperty('outputPath');
+    expect(body.version).toBeDefined();
+  });
+
+  it('returns build info from /version', async () => {
+    dir = tempDir();
+    const icsPath = path.join(dir, 'public.ics');
+    writeFileSync(icsPath, 'BEGIN:VCALENDAR');
+
+    const jobs: ExportJob[] = [
+      {
+        id: '1',
+        email: 'a@example.com',
+        password: 'pw',
+        outputPath: icsPath,
+      },
+    ];
+    const state: RunState = { running: false, jobs: { '1': { running: false } } };
+    const app = buildApp(jobs, state, '* * * * *', [dir]);
+    const { res } = await perform(app, 'GET', '/version');
+    expect(res.statusCode).toBe(200);
+    const body = res._getJSONData();
+    expect(body.version).toBeDefined();
+    expect(typeof body.version).toBe('string');
   });
 });
 
