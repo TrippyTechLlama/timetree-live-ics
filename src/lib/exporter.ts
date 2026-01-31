@@ -1,9 +1,9 @@
-import { execFile } from 'node:child_process';
-import { promisify } from 'node:util';
+import { writeFile } from 'node:fs/promises';
 import { ExportJob, RunState } from '@/lib/types';
 import { logger } from '@/lib/logger';
-
-const execFileAsync = promisify(execFile);
+import { login, resolveCalendar, fetchEvents } from '@/lib/timetree';
+import { buildICS } from '@/lib/ics';
+import { buildInfo } from '@/lib/version';
 
 export async function runExport(jobs: ExportJob[], state: RunState) {
   if (state.running) {
@@ -19,16 +19,22 @@ export async function runExport(jobs: ExportJob[], state: RunState) {
     jobState.running = true;
     jobState.lastRun = new Date();
 
-    const args = ['-o', job.outputPath, '-e', job.email];
-    if (job.calendarCode) args.push('-c', job.calendarCode);
-
     try {
-      const { stdout, stderr } = await execFileAsync('timetree-exporter', args, {
-        env: { ...process.env, TIMETREE_PASSWORD: job.password },
-        timeout: 5 * 60 * 1000,
-      });
-      if (stdout) process.stdout.write(stdout);
-      if (stderr) process.stderr.write(stderr);
+      const sessionId = await login(job.email, job.password);
+      const { calendarId, calendarName, aliasCode } = await resolveCalendar(
+        sessionId,
+        job.calendarCode
+      );
+      const events = await fetchEvents(sessionId, calendarId, calendarName);
+      logger.info(
+        `Fetched ${events.length} events for ${job.email}${
+          aliasCode ? `:${aliasCode}` : ''
+        } (${calendarName})`
+      );
+
+      const ics = buildICS(events, buildInfo.version);
+      await writeFile(job.outputPath, ics, 'utf8');
+
       jobState.lastSuccess = new Date();
       jobState.lastError = undefined;
       logger.info(

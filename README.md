@@ -1,6 +1,6 @@
 # timetree-live-ics
 
-Containerized TimeTree → ICS sync with a live URL. Now implemented in TypeScript (Node) with an internal cron and static server. It still uses the upstream [`timetree-exporter`](https://github.com/eoleedi/TimeTree-Exporter) Python CLI under the hood.
+Containerized TimeTree → ICS sync with a live URL. Fully implemented in TypeScript (Node) with an internal cron and static server.
 
 [![CI & Publish](https://github.com/TrippyTechLlama/timetree-live-ics/actions/workflows/ci-release.yml/badge.svg)](https://github.com/TrippyTechLlama/timetree-live-ics/actions/workflows/ci-release.yml)
 [![Release Please](https://github.com/TrippyTechLlama/timetree-live-ics/actions/workflows/release-please.yml/badge.svg)](https://github.com/TrippyTechLlama/timetree-live-ics/actions/workflows/release-please.yml)
@@ -78,7 +78,6 @@ Place the file in the mounted `/config` volume (or point `TIMETREE_CONFIG` elsew
 Security note: ICS files are otherwise public. Options: deterministic names (easy to share), custom/ random `{token}` for obscurity, or per-file Basic Auth. For stronger guarantees, front the service with a reverse proxy that enforces auth or IP allowlisting. The `/health` endpoint only returns minimal status (no paths or tokens); detailed info is logged server-side with tokens masked.
 
 ## Credits & license
-- Built on top of the Python [`timetree-exporter`](https://github.com/eoleedi/TimeTree-Exporter) (MIT).
 - This project is MIT licensed (see `LICENSE`).
 
 ## Releases & versioning
@@ -90,7 +89,7 @@ Security note: ICS files are otherwise public. Options: deterministic names (eas
 
 ## How it works
 - `src/index.ts` (compiled to `dist/index.js`) runs an initial export, serves `/data` via Express, and schedules subsequent exports with `node-cron`.
-- The actual export is performed by the Python `timetree-exporter` CLI invoked from Node.
+- `src/lib/timetree.ts` calls the TimeTree web API directly, then `src/lib/ics.ts` emits an RFC5545 calendar.
 - `/data` is a volume; mount it to persist or inspect the ICS.
 
 ## Adjusting the schedule

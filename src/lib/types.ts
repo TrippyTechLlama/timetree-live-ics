@@ -45,3 +45,32 @@ export type HealthPayload = {
   version: string;
   // Sensitive details are logged, not returned.
 };
+
+export type TimeTreeCalendarMetadata = {
+  id: number;
+  name: string;
+  alias_code: string;
+  deactivated_at: string | null;
+};
+
+export type TimeTreeEvent = {
+  uuid: string;
+  title: string;
+  created_at: number;
+  updated_at: number;
+  recurrences: string[] | null;
+  alerts: number[] | null;
+  url: string;
+  note: string;
+  start_at: number;
+  end_at: number;
+  all_day: boolean;
+  start_timezone: string;
+  end_timezone: string;
+  location_lat: string | null;
+  location_lon: string | null;
+  location: string;
+  parent_id: string | null;
+  type: number;
+  category: number;
+};
