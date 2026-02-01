@@ -1,5 +1,5 @@
-import 'tsconfig-paths/register';
 import 'dotenv/config';
+import './register-paths';
 import cron from 'node-cron';
 import { existsSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
