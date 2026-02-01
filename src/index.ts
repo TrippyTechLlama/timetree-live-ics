@@ -46,7 +46,13 @@ function parseDurationSeconds(raw: string): number {
 }
 
 const { jobs, configPath } = loadJobs();
-const outputDirs = Array.from(new Set(jobs.map((job) => path.dirname(job.outputPath))));
+const outputDirSet = new Set<string>();
+for (const job of jobs) {
+  outputDirSet.add(path.dirname(job.outputPath));
+  if (job.birthdaysOutput) outputDirSet.add(path.dirname(job.birthdaysOutput));
+  if (job.memosOutput) outputDirSet.add(path.dirname(job.memosOutput));
+}
+const outputDirs = Array.from(outputDirSet);
 for (const dir of outputDirs) ensureDir({ existsSync, mkdirSync }, dir);
 
 const state: RunState = { running: false, jobs: {} };

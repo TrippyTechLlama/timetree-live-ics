@@ -47,6 +47,13 @@ exports:
     # 3) deterministic-but-obscure short ID (default when output omitted)
     # randomToken: true
 
+    # Include or split birthdays/memos (default skipped)
+    includeBirthdays: false
+    includeMemos: false
+    # Optional separate ICS outputs
+    # birthdaysOutput: /data/{token}-birthdays.ics
+    # memosOutput: /data/{token}-memos.ics
+
     # Basic auth for this file (download protection)
     auth:
       type: basic

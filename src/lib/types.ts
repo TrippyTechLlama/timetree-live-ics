@@ -10,6 +10,10 @@ export type ExportJob = {
   password: string;
   calendarCode?: string;
   outputPath: string;
+  birthdaysOutput?: string;
+  memosOutput?: string;
+  includeBirthdays?: boolean;
+  includeMemos?: boolean;
   token?: string;
   auth?: BasicAuth;
 };

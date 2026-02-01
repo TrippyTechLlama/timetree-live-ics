@@ -80,4 +80,29 @@ exports:
       expect(jobs[0].auth).toEqual({ type: 'basic', username: 'user', password: 'pass' });
     });
   });
+
+  it('parses birthdays/memos options and outputs', () => {
+    withTempDir((dir) => {
+      const cfg = `
+exports:
+  - email: a@example.com
+    password: pw
+    calendars: [abc]
+    includeBirthdays: true
+    includeMemos: false
+    birthdaysOutput: ${dir}/bday-{token}.ics
+    memosOutput: ${dir}/memos-{calendar}.ics
+    token: FIXED1234
+`;
+      const cfgPath = path.join(dir, 'config.yaml');
+      writeFileSync(cfgPath, cfg);
+      process.env.TIMETREE_CONFIG = cfgPath;
+      process.env.OUTPUT_BASE = dir;
+      const { jobs } = loadJobs();
+      expect(jobs[0].includeBirthdays).toBe(true);
+      expect(jobs[0].includeMemos).toBe(false);
+      expect(jobs[0].birthdaysOutput).toContain('bday-FIXED1234.ics');
+      expect(jobs[0].memosOutput).toContain('memos-abc.ics');
+    });
+  });
 });

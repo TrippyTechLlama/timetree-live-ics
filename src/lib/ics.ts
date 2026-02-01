@@ -43,15 +43,15 @@ function addIfPresent(lines: string[], label: string, value?: string | null) {
   lines.push(`${label}:${value}`);
 }
 
-function buildEventLines(event: TimeTreeEvent): string[] | null {
-  if (event.type === EVENT_TYPE_BIRTHDAY) {
-    logger.debug(
-      { uid: event.uuid, title: event.title },
-      'Skipping birthday event while building ICS'
-    );
+function buildEventLines(
+  event: TimeTreeEvent,
+  opts: { includeBirthdays?: boolean; includeMemos?: boolean }
+): string[] | null {
+  if (event.type === EVENT_TYPE_BIRTHDAY && !opts.includeBirthdays) {
+    logger.debug({ uid: event.uuid, title: event.title }, 'Skipping birthday event while building ICS');
     return null;
   }
-  if (event.category === EVENT_CATEGORY_MEMO) {
+  if (event.category === EVENT_CATEGORY_MEMO && !opts.includeMemos) {
     logger.debug({ uid: event.uuid, title: event.title }, 'Skipping memo event while building ICS');
     return null;
   }
@@ -121,14 +121,18 @@ function buildEventLines(event: TimeTreeEvent): string[] | null {
   return lines;
 }
 
-export function buildICS(events: TimeTreeEvent[], prodVersion = 'timetree-live-ics'): string {
+export function buildICS(
+  events: TimeTreeEvent[],
+  prodVersion = 'timetree-live-ics',
+  opts: { includeBirthdays?: boolean; includeMemos?: boolean } = {}
+): string {
   const lines: string[] = [];
   lines.push('BEGIN:VCALENDAR');
   lines.push(`PRODID:-//TimeTree Exporter ${prodVersion}//EN`);
   lines.push('VERSION:2.0');
 
   for (const event of events) {
-    const eventLines = buildEventLines(event);
+    const eventLines = buildEventLines(event, opts);
     if (!eventLines) continue;
     lines.push(...eventLines);
   }

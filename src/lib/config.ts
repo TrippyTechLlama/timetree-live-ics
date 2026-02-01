@@ -44,6 +44,11 @@ function buildJobsFromConfig(entries: any[], outputBase: string): ExportJob[] {
       entry?.calendar_codes ??
       [entry?.calendarCode ?? entry?.calendar_code];
     const outputTemplate = entry?.output ?? entry?.outputPath ?? entry?.output_path;
+    const birthdaysOutputTemplate =
+      entry?.birthdaysOutput ?? entry?.birthdays_output ?? entry?.birthdays_output_path;
+    const memosOutputTemplate = entry?.memosOutput ?? entry?.memos_output ?? entry?.memos_output_path;
+    const includeBirthdays = entry?.includeBirthdays ?? entry?.include_birthdays ?? false;
+    const includeMemos = entry?.includeMemos ?? entry?.include_memos ?? false;
     const fixedToken = typeof entry?.token === 'string' ? entry.token : undefined;
     const addToken =
       entry?.randomToken === true ||
@@ -84,13 +89,24 @@ function buildJobsFromConfig(entries: any[], outputBase: string): ExportJob[] {
                 `${slugify(email)}-${code ? slugify(code) : 'default'}.ics`
               );
 
+      const birthdaysOutput =
+        typeof birthdaysOutputTemplate === 'string' ? applyTemplate(birthdaysOutputTemplate) : undefined;
+      const memosOutput =
+        typeof memosOutputTemplate === 'string' ? applyTemplate(memosOutputTemplate) : undefined;
+
       ensureDir({ existsSync, mkdirSync }, path.dirname(outputPath));
+      if (birthdaysOutput) ensureDir({ existsSync, mkdirSync }, path.dirname(birthdaysOutput));
+      if (memosOutput) ensureDir({ existsSync, mkdirSync }, path.dirname(memosOutput));
       jobs.push({
         id: `${email}-${code ?? 'default'}`,
         email,
         password,
         calendarCode: typeof code === 'string' && code.length > 0 ? code : undefined,
         outputPath,
+        birthdaysOutput,
+        memosOutput,
+        includeBirthdays: Boolean(includeBirthdays),
+        includeMemos: Boolean(includeMemos),
         token,
         auth,
       });

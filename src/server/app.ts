@@ -28,7 +28,12 @@ export function buildApp(
       const dirPrefix = dir.endsWith(path.sep) ? dir : `${dir}${path.sep}`;
       if (!candidate.startsWith(dirPrefix)) continue; // prevent path traversal
 
-      const match = jobs.find((j) => path.resolve(j.outputPath) === candidate);
+      const match = jobs.find((j) => {
+        const main = path.resolve(j.outputPath);
+        const birthdays = j.birthdaysOutput ? path.resolve(j.birthdaysOutput) : null;
+        const memos = j.memosOutput ? path.resolve(j.memosOutput) : null;
+        return candidate === main || candidate === birthdays || candidate === memos;
+      });
       if (match) {
         job = match;
         break; // respect static directory order

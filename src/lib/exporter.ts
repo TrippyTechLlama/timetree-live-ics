@@ -35,8 +35,29 @@ export async function runExport(jobs: ExportJob[], state: RunState) {
         } (${calendarName})`
       );
 
-      const ics = buildICS(events, buildInfo.version);
+      const ics = buildICS(events, buildInfo.version, {
+        includeBirthdays: job.includeBirthdays,
+        includeMemos: job.includeMemos,
+      });
       await writeFile(job.outputPath, ics, 'utf8');
+
+      if (job.birthdaysOutput) {
+        const birthdays = events.filter((e) => e.type === 1);
+        const birthdaysIcs = buildICS(birthdays, buildInfo.version, {
+          includeBirthdays: true,
+          includeMemos: false,
+        });
+        await writeFile(job.birthdaysOutput, birthdaysIcs, 'utf8');
+      }
+
+      if (job.memosOutput) {
+        const memos = events.filter((e) => e.category === 2);
+        const memosIcs = buildICS(memos, buildInfo.version, {
+          includeBirthdays: false,
+          includeMemos: true,
+        });
+        await writeFile(job.memosOutput, memosIcs, 'utf8');
+      }
 
       jobState.lastSuccess = new Date();
       jobState.lastError = undefined;
