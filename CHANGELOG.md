@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.3](https://github.com/mr-onadasky/timetree-live-ics/compare/v0.8.2...v0.8.3) (2026-02-01)
+
+
+### Bug Fixes
+
+* add additional logging for smoke test ([27f8cca](https://github.com/mr-onadasky/timetree-live-ics/commit/27f8cca1af571a1b8d844553eb325ba35d82e3aa))
+
 ## [0.8.2](https://github.com/mr-onadasky/timetree-live-ics/compare/v0.8.1...v0.8.2) (2026-02-01)
 
 
