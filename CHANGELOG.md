@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/mr-onadasky/timetree-live-ics/compare/v0.7.0...v0.8.0) (2026-02-01)
+
+
+### Features
+
+* add optional birthday/memo feeds and masking-safe logging ([48d3ae1](https://github.com/mr-onadasky/timetree-live-ics/commit/48d3ae13779ad7a18cae56abae7e6dfca67d080e))
+
 ## [0.7.0](https://github.com/mr-onadasky/timetree-live-ics/compare/v0.6.1...v0.7.0) (2026-02-01)
 
 
